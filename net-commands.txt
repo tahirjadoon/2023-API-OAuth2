@@ -1,9 +1,56 @@
+-----------------
+dotnet commands
+-----------------
+
+Reference: https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet
+
 dotnet --list-sdks
-    3.1.426 [C:\Program Files\dotnet\sdk]
-    5.0.403 [C:\Program Files\dotnet\sdk]
-    5.0.408 [C:\Program Files\dotnet\sdk]
-    6.0.121 [C:\Program Files\dotnet\sdk]
-    7.0.400 [C:\Program Files\dotnet\sdk]
+	3.1.426 [C:\Program Files\dotnet\sdk]
+	5.0.403 [C:\Program Files\dotnet\sdk]
+	5.0.408 [C:\Program Files\dotnet\sdk]
+	6.0.121 [C:\Program Files\dotnet\sdk]
+	7.0.400 [C:\Program Files\dotnet\sdk]
 
 dotnet --info
+dotnet run 
+dotnet watch run
+dotnet clean
+dotnet build
+dotnet restore
+dotnet msbuild
 
+--------------------------
+Creating a new API Project
+--------------------------
+Create a Solution
+
+	C:\2023-API-OAuth2\API-01-Basics>dotnet new sln
+			Creates the solution the same as the containing folder
+			
+	C:\2023-API-OAuth2\API-01-Basics>dotnet new sln --name OAuth2
+			Creates the solution with name OAuth2 
+			
+			Welcome to .NET 7.0!
+			---------------------
+			SDK Version: 7.0.400
+			
+			The template "Solution File" was created successfully.
+	
+Create a project
+
+	C:\2023-API-OAuth2\API-01-Basics>dotnet new webapi -o OAuth2.WebApi
+		Create a new folder with name OAuth2.WebApi 
+		This creates the basic template of the WebApi project in this folder 
+		
+		The template "ASP.NET Core Web API" was created successfully.
+
+		Processing post-creation actions...
+		Restoring C:\2023-API-OAuth2\API-01-Basics\OAuth2.WebApi\OAuth2.WebApi.csproj:
+		  Determining projects to restore...
+		  Restored C:\2023-API-OAuth2\API-01-Basics\OAuth2.WebApi\OAuth2.WebApi.csproj (in 6.25 sec).
+		Restore succeeded.
+		
+Add the project to the solution 
+	
+	C:\2023-API-OAuth2\API-01-Basics>dotnet sln add OAuth2.WebApi
+		Project `OAuth2.WebApi\OAuth2.WebApi.csproj` added to the solution.
