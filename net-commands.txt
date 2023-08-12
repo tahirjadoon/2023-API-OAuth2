@@ -18,6 +18,20 @@ dotnet clean
 dotnet build
 dotnet restore
 dotnet msbuild
+dotnet tool list -g [https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-list]
+
+Migrations:
+	dotnet ef migrations add InitialCreate -o Core/DB/Migrations
+	dotnet ef migrations remove
+	dotnet ef database update
+	
+	--Completely remove all migrations and start all over again
+	•	dotnet ef database update 0
+	•	dotnet ef migrations remove
+
+	--Drop database and recreate
+	•	dotnet ef database drop
+	•	dotnet ef database update
 
 --------------------------
 Creating a new API Project
