@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OAuth2.WebApi.Core.Data.BusinessLogic;
 using OAuth2.WebApi.Core.Entities;
 
 namespace OAuth2.WebApi.Controllers;
 
-[ApiController]
-[Route("api/[controller]")] // /api/users
-public class UsersController : ControllerBase
+public class UsersController : BaseApiController
 {
     private readonly IUserBusinessLogic _userBL;
 
@@ -34,6 +33,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet("{id}", Name = "GetUserById")]
     //public ActionResult<AppUser> GetUser(int id)
     public async Task<ActionResult<AppUser>> GetUser(int id)
@@ -49,6 +49,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet("name/{name}", Name = "GetUserByName")]
     public async Task<ActionResult<AppUser>> GetUser(string name)
     {
@@ -63,6 +64,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="guid"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet("guid/{guid}", Name = "GetUserByGuid")]
     public async Task<ActionResult<AppUser>> GetUser(Guid guid)
     {

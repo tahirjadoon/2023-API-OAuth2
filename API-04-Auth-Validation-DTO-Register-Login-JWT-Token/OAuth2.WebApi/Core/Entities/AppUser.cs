@@ -15,7 +15,15 @@ public class AppUser
     /// Auto generation like this is not happening. So check the Core/DB/DataContext.cs for more details
     /// </summary>
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Guid { get; set; }
+    [Required]
+    public Guid Guid { get; set; } = Guid.NewGuid();
 
+    [Required]
     public string UserName { get; set; }
+
+    [Required]
+    public byte[] PasswordHash { get; set; }
+
+    [Required]
+    public byte[] PasswordSalt { get; set; }
 }

@@ -11,7 +11,7 @@ using OAuth2.WebApi.Core.DB;
 namespace OAuth2.WebApi.Core.DB.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230812154134_InitialCreate")]
+    [Migration("20230814041650_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -30,7 +30,16 @@ namespace OAuth2.WebApi.Core.DB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<byte[]>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

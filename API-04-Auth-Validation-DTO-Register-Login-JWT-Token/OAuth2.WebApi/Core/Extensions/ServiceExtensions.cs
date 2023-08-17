@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OAuth2.WebApi.Core.Data.BusinessLogic;
 using OAuth2.WebApi.Core.Data.Repositories;
 using OAuth2.WebApi.Core.DB;
+using OAuth2.WebApi.Core.Services;
 
 namespace OAuth2.WebApi.Core.Extensions;
 
@@ -30,6 +34,8 @@ public static class ServiceExtensions
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserBusinessLogic, UserBusinessLogic>();
+
+        services.AddScoped<ITokenService, TokenService>();
     }
 
     /// <summary>
@@ -56,6 +62,29 @@ public static class ServiceExtensions
             });
         }
         return myAllowSpecificOrigins;
+    }
+
+    /// <summary>
+    /// Register authentications service
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    public static void RegisterAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        //get the token from config and change to byte array
+        var tokenKey = Encoding.UTF8.GetBytes(configuration.GetTokenKey());
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(tokenKey),
+                        ValidateIssuer = false, //issuer of the token
+                        ValidateAudience = false
+                    };
+                });
     }
 
 }

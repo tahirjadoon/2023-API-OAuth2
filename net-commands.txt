@@ -13,7 +13,7 @@ dotnet --list-sdks
 
 dotnet --info
 dotnet run 
-dotnet watch run
+dotnet watch or dotnet watch run or dotnet watch –no-hot-reload
 dotnet clean
 dotnet build
 dotnet restore
@@ -21,7 +21,7 @@ dotnet msbuild
 dotnet tool list -g [https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-list]
 
 Migrations:
-	dotnet ef migrations add InitialCreate -o Core/DB/Migrations
+	dotnet ef migrations add InitialCreate -o Core/DB/Migrations  [FIRST TIME, SECOND TIME NO NEED TO SPECIFY DIR]
 	dotnet ef migrations remove
 	dotnet ef database update
 	

@@ -41,4 +41,10 @@ public static class ConfigExtensions
         var loggingLevelDefault = config.GetSectionValue<string>(ConfigKeyConstants.LoggingLevelMsAspNetCore, string.Empty);
         return loggingLevelDefault;
     }
+
+    public static string GetTokenKey(this IConfiguration config)
+    {
+        var tokenKey = config.GetSectionValue<string>(ConfigKeyConstants.TokenKey, string.Empty);
+        return tokenKey;
+    }
 }
