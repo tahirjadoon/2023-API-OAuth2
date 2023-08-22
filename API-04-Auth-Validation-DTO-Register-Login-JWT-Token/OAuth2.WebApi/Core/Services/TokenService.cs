@@ -55,6 +55,8 @@ public class TokenService : ITokenService
         var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
         //describe token
+        //check for issuer and audience: https://security.stackexchange.com/questions/256794/should-i-specify-jwt-audience-and-issuer-if-i-have-only-one-spa-client
+        //Check extension ServiceExtension.RegisterAuthentication as well
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity(claims),

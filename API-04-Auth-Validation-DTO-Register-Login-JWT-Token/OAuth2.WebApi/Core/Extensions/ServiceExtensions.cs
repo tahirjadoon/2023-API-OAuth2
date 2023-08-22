@@ -46,7 +46,7 @@ public static class ServiceExtensions
     public static string RegisterCors(this IServiceCollection services, IConfiguration configuration)
     {
         var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
-        //https://stackoverflow.com/questions/42858335/how-to-hardcode-and-read-a-string-array-in-appsettings-json
+
         var allowedSpecificOrigins = configuration.GetAllowSpecificOrigins();
         if (allowedSpecificOrigins != null && allowedSpecificOrigins.Any())
         {
@@ -74,6 +74,8 @@ public static class ServiceExtensions
         //get the token from config and change to byte array
         var tokenKey = Encoding.UTF8.GetBytes(configuration.GetTokenKey());
 
+        //check for issuer and audience: https://security.stackexchange.com/questions/256794/should-i-specify-jwt-audience-and-issuer-if-i-have-only-one-spa-client
+        //TokenService is creating the token
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
