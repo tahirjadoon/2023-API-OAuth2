@@ -5,16 +5,17 @@ namespace OAuth2.WebApi.Core.Data.BusinessLogic;
 
 public interface IUserBusinessLogic
 {
-    Task<IEnumerable<AppUser>> GetAppUsersAsync();
+    Task<IEnumerable<UserDto>> GetUsersAsync();
 
-    Task<AppUser> GetAppUserAsync(int id);
+    Task<UserDto> GetUserAsync(int id);
 
-    Task<AppUser> GetAppUserAsync(string userName);
+    Task<UserDto> GetUserAsync(string userName);
 
-    Task<AppUser> GetAppUserAsync(Guid guid);
+    Task<UserDto> GetUserAsync(Guid guid);
 
     Task<LoginResponseDto> RegisterAsync(UserRegisterDto registerUser);
 
     Task<LoginResponseDto> LoginAsync(LoginDto loginInfo);
 
+    Task<AppUser> GetAppUserAsync(string userName, bool includePhotos = false);
 }

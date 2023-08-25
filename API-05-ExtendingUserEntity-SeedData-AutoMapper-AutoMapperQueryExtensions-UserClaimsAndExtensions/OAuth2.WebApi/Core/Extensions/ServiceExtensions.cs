@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OAuth2.WebApi.Core.AutoMapper;
 using OAuth2.WebApi.Core.Data.BusinessLogic;
 using OAuth2.WebApi.Core.Data.Repositories;
 using OAuth2.WebApi.Core.DB;
@@ -36,6 +37,12 @@ public static class ServiceExtensions
         services.AddScoped<IUserBusinessLogic, UserBusinessLogic>();
 
         services.AddScoped<ITokenService, TokenService>();
+
+        //AutoMapper
+        //old way 
+        services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+        //new way
+        //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }
 
     /// <summary>

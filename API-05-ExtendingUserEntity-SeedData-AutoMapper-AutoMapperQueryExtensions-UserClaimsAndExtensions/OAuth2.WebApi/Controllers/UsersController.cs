@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OAuth2.WebApi.Core.Data.BusinessLogic;
+using OAuth2.WebApi.Core.Dto;
 using OAuth2.WebApi.Core.Entities;
 
 namespace OAuth2.WebApi.Controllers;
@@ -18,11 +19,12 @@ public class UsersController : BaseApiController
     /// /api/users
     /// </summary>
     /// <returns></returns>
+    [Authorize]
     [HttpGet]
     //public ActionResult<IEnumerable<AppUser>> GetUsers()
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
     {
-        var users = await _userBL.GetAppUsersAsync();
+        var users = await _userBL.GetUsersAsync();
         if (users == null || !users.Any())
             return NotFound("No users found!");
         return Ok(users);
@@ -36,9 +38,9 @@ public class UsersController : BaseApiController
     [Authorize]
     [HttpGet("{id}", Name = "GetUserById")]
     //public ActionResult<AppUser> GetUser(int id)
-    public async Task<ActionResult<AppUser>> GetUser(int id)
+    public async Task<ActionResult<UserDto>> GetUser(int id)
     {
-        var user = await _userBL.GetAppUserAsync(id);
+        var user = await _userBL.GetUserAsync(id);
         if (user == null)
             return NotFound($"No user found by id {id}");
         return Ok(user);
@@ -51,9 +53,9 @@ public class UsersController : BaseApiController
     /// <returns></returns>
     [Authorize]
     [HttpGet("name/{name}", Name = "GetUserByName")]
-    public async Task<ActionResult<AppUser>> GetUser(string name)
+    public async Task<ActionResult<UserDto>> GetUser(string name)
     {
-        var user = await _userBL.GetAppUserAsync(name);
+        var user = await _userBL.GetUserAsync(name);
         if (user == null)
             return NotFound($"No user found by name {name}");
         return Ok(user);
@@ -66,9 +68,9 @@ public class UsersController : BaseApiController
     /// <returns></returns>
     [Authorize]
     [HttpGet("guid/{guid}", Name = "GetUserByGuid")]
-    public async Task<ActionResult<AppUser>> GetUser(Guid guid)
+    public async Task<ActionResult<UserDto>> GetUser(Guid guid)
     {
-        var user = await _userBL.GetAppUserAsync(guid);
+        var user = await _userBL.GetUserAsync(guid);
         if (user == null)
             return NotFound($"No user found by id {guid}");
         return Ok(user);

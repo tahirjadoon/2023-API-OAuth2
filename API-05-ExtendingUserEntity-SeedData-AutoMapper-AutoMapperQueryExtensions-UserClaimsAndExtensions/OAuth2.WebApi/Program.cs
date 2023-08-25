@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 */
 
+using Microsoft.EntityFrameworkCore;
+using OAuth2.WebApi.Core.DB;
 using OAuth2.WebApi.Core.Extensions;
 using OAuth2.WebApi.Core.Middleware;
 
@@ -50,5 +52,26 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//CUSTOM: Seed Data Start
+//this will give access to all th services
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
+{
+    var context = services.GetRequiredService<DataContext>();
+    //applies any pending migrations for the context to the the database
+    //will create the database if it does not already exist
+    //just restarting the application will apply our migrations
+    await context.Database.MigrateAsync();
+    //seed users
+    await Seed.SeedUsers(context);
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occured during seeding of data");
+}
+//CUSTOM: Seed Data End
 
 app.Run();

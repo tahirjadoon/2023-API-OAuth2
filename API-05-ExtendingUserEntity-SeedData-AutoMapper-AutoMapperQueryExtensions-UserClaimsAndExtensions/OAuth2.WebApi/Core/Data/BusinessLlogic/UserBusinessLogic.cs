@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using OAuth2.WebApi.Core.Data.Repositories;
 using OAuth2.WebApi.Core.Dto;
 using OAuth2.WebApi.Core.Entities;
@@ -12,39 +13,61 @@ public class UserBusinessLogic : IUserBusinessLogic
 {
     private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
+    private readonly IMapper _mapper;
 
-    public UserBusinessLogic(IUserRepository userRepository, ITokenService tokenService)
+    public UserBusinessLogic(IUserRepository userRepository, ITokenService tokenService, IMapper mapper)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<AppUser>> GetAppUsersAsync()
-    {
-        var users = await _userRepository.GetAppUsersAsync();
-        return users;
-    }
-
-    public Task<AppUser> GetAppUserAsync(int id)
-    {
-        var user = _userRepository.GetAppUserAsync(id);
-        return user;
-    }
-
-    public async Task<AppUser> GetAppUserAsync(string userName)
+    public async Task<AppUser> GetAppUserAsync(string userName, bool includePhotos = false)
     {
         if (string.IsNullOrWhiteSpace(userName))
             throw new ValidationException("Invalid userName");
 
-        var user = await _userRepository.GetAppUserAsync(userName);
-        return user;
-
+        var appUser = await _userRepository.GetAppUserAsync(userName, includePhotos);
+        return appUser;
     }
 
-    public async Task<AppUser> GetAppUserAsync(Guid guid)
+    public async Task<IEnumerable<UserDto>> GetUsersAsync()
     {
-        var user = await _userRepository.GetAppUserAsync(guid);
-        return user;
+        var appUsers = await _userRepository.GetUsersAsync();
+        if (appUsers == null || !appUsers.Any())
+            return null;
+        //var users = _mapper.Map<IEnumerable<UserDto>>(appUsers);
+        return appUsers;
+    }
+
+    public async Task<UserDto> GetUserAsync(int id)
+    {
+        var appUser = await _userRepository.GetUserAsync(id);
+        if (appUser == null)
+            return null;
+        //var user = _mapper.Map<UserDto>(appUser);
+        return appUser;
+    }
+
+    public async Task<UserDto> GetUserAsync(string userName)
+    {
+        if (string.IsNullOrWhiteSpace(userName))
+            throw new ValidationException("Invalid userName");
+
+        var appUser = await _userRepository.GetUserAsync(userName);
+        if (appUser == null)
+            return null;
+        //var user = _mapper.Map<UserDto>(appUser);
+        return appUser;
+    }
+
+    public async Task<UserDto> GetUserAsync(Guid guid)
+    {
+        var appUser = await _userRepository.GetUserAsync(guid);
+        if (appUser == null)
+            return null;
+        //var user = _mapper.Map<UserDto>(appUser);
+        return appUser;
     }
 
     public async Task<LoginResponseDto> RegisterAsync(UserRegisterDto registerUser)
@@ -90,7 +113,7 @@ public class UserBusinessLogic : IUserBusinessLogic
         if (loginInfo == null)
             throw new ValidationException("Login info missing");
 
-        var appUser = await _userRepository.GetAppUserAsync(loginInfo.UserName);
+        var appUser = await _userRepository.GetAppUserAsync(loginInfo.UserName, includePhotos: true);
         if (appUser == null || appUser.PasswordSalt == null || appUser.PasswordHash == null)
             throw new UnauthorizedAccessException("Either username or password is wrong");
 

@@ -1,4 +1,5 @@
-﻿using OAuth2.WebApi.Core.Entities;
+﻿using OAuth2.WebApi.Core.Dto;
+using OAuth2.WebApi.Core.Entities;
 
 namespace OAuth2.WebApi.Core.Data.Repositories;
 
@@ -12,11 +13,13 @@ public interface IUserRepository
 
     Task<bool> RegisterAsync(AppUser appUser);
 
-    Task<IEnumerable<AppUser>> GetAppUsersAsync();
+    Task<AppUser> GetAppUserAsync(string userName, bool includePhotos = false);
 
-    Task<AppUser> GetAppUserAsync(int id);
+    Task<IEnumerable<UserDto>> GetUsersAsync();
 
-    Task<AppUser> GetAppUserAsync(string userName);
+    Task<UserDto> GetUserAsync(int id);
 
-    Task<AppUser> GetAppUserAsync(Guid guid);
+    Task<UserDto> GetUserAsync(string userName);
+
+    Task<UserDto> GetUserAsync(Guid guid);
 }
