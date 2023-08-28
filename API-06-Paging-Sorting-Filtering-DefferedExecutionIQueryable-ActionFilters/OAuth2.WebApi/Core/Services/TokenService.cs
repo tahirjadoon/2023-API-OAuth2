@@ -47,8 +47,10 @@ public class TokenService : ITokenService
         //https://learn.microsoft.com/en-us/dotnet/api/system.identitymodel.tokens.jwt.jwtregisteredclaimnames?view=msal-web-dotnet-latest
         var claims = new List<Claim>()
         {
-            new Claim(JwtRegisteredClaimNames.NameId, user.UserName),
-            new Claim("Guid", user.Guid.ToString())
+            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+            new Claim("guid", user.Guid.ToString()),
+            new Claim("displayName", user.DisplayName),
         };
 
         //signing credentials with key

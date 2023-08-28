@@ -1,4 +1,6 @@
-﻿namespace OAuth2.WebApi.Core.Extensions;
+﻿using OAuth2.WebApi.Core.Constants;
+
+namespace OAuth2.WebApi.Core.Extensions;
 
 public static class DateTimeExtensions
 {
@@ -23,5 +25,29 @@ public static class DateTimeExtensions
             age--;
 
         return age;
+    }
+
+    /// <summary>
+    /// The oldest the person can be. This is the minimum age. check against MaxAge
+    /// </summary>
+    /// <param name="age"></param>
+    /// <returns></returns>
+    public static DateOnly CalculateMinDob(this int age)
+    {
+        if (age <= 0) age = DataConstants.MaxAge;
+        var dob = DateOnly.FromDateTime(DateTime.Today.AddYears(-age));
+        return dob;
+    }
+
+    /// <summary>
+    /// The youngest the person can be. check against min age
+    /// </summary>
+    /// <param name="age"></param>
+    /// <returns></returns>
+    public static DateOnly CalculateMaxDob(this int age)
+    {
+        if (age <= 0) age = DataConstants.MinAge;
+        var dob = DateOnly.FromDateTime(DateTime.Today.AddYears(-age - 1));
+        return dob;
     }
 }

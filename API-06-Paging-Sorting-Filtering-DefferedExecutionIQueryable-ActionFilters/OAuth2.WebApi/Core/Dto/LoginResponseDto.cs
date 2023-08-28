@@ -7,4 +7,8 @@ public class LoginResponseDto
     public Guid Guid { get; set; }
 
     public string Token { get; set; }
+
+    public string Gender { get; set; }
+
+    public string DisplayName { get; set; }
 }

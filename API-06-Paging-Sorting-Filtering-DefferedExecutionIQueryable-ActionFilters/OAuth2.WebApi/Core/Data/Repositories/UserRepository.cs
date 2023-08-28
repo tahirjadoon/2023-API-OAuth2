@@ -2,9 +2,12 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using OAuth2.WebApi.Core.Constants;
 using OAuth2.WebApi.Core.DB;
 using OAuth2.WebApi.Core.Dto;
+using OAuth2.WebApi.Core.Dto.Pagination;
 using OAuth2.WebApi.Core.Entities;
+using OAuth2.WebApi.Core.Extensions;
 
 namespace OAuth2.WebApi.Core.Data.Repositories;
 
@@ -102,6 +105,7 @@ public class UserRepository : IUserRepository
     */
 
     //rename above GetAppUsersAsync()
+    /*
     public async Task<IEnumerable<UserDto>> GetUsersAsync()
     {
         var users = await _context.Users
@@ -110,6 +114,45 @@ public class UserRepository : IUserRepository
                             //.AsNoTracking()
                             .ToListAsync();
         return users;
+    }
+    */
+
+    public async Task<PagedList<UserDto>> GetUsersAsync(UserParams userParams)
+    {
+        var query = _context.Users.AsQueryable();
+
+        //apply filters
+        if (userParams.CurrentUserGuid.HasValue)
+            query = query.Where(u => u.Guid != userParams.CurrentUserGuid.Value);
+        if (!string.IsNullOrWhiteSpace(userParams.Gender))
+            query = query.Where(u => u.Gender == userParams.Gender);
+
+        //age >= 
+        var minDob = userParams.MaxAge.CalculateMaxDob();
+        //age <=
+        var maxDob = userParams.MinAge.CalculateMinDob();
+        //apply date of borth filter
+        query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+
+        //order by 
+        if (!string.IsNullOrWhiteSpace(userParams.OrderBy))
+        {
+            //the new switch statement. _ is the default
+            query = userParams.OrderBy switch
+            {
+                DataConstants.Created => query.OrderByDescending(u => u.CreatedOn),
+                _ => query.OrderByDescending(u => u.LastActive)
+            };
+        }
+
+        //projectTo to get the photos 
+        var finalQuery = query
+                        .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
+                        .AsNoTracking();
+
+        //page list has the static method that receive the IQueryable so use it and will return the object
+        var pageList = await PagedList<UserDto>.CreateAsync(finalQuery, userParams.PageNumber, userParams.PageSize);
+        return pageList;
     }
 
     /*
@@ -181,6 +224,4 @@ public class UserRepository : IUserRepository
                     .SingleOrDefaultAsync();
         return user;
     }
-
-
 }

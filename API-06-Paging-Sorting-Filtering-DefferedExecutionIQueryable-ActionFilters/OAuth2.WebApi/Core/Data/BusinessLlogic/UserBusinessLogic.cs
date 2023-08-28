@@ -2,6 +2,7 @@
 using AutoMapper;
 using OAuth2.WebApi.Core.Data.Repositories;
 using OAuth2.WebApi.Core.Dto;
+using OAuth2.WebApi.Core.Dto.Pagination;
 using OAuth2.WebApi.Core.Entities;
 using OAuth2.WebApi.Core.ExceptionCustom;
 using OAuth2.WebApi.Core.Extensions;
@@ -31,6 +32,7 @@ public class UserBusinessLogic : IUserBusinessLogic
         return appUser;
     }
 
+    /*
     public async Task<IEnumerable<UserDto>> GetUsersAsync()
     {
         var appUsers = await _userRepository.GetUsersAsync();
@@ -38,6 +40,13 @@ public class UserBusinessLogic : IUserBusinessLogic
             return null;
         //var users = _mapper.Map<IEnumerable<UserDto>>(appUsers);
         return appUsers;
+    }
+    */
+    public async Task<PagedList<UserDto>> GetUsersAsync(UserParams userParams)
+    {
+        var users = await _userRepository.GetUsersAsync(userParams);
+        if (users == null || !users.Any()) return null;
+        return users;
     }
 
     public async Task<UserDto> GetUserAsync(int id)
@@ -137,8 +146,30 @@ public class UserBusinessLogic : IUserBusinessLogic
         {
             UserName = appUser.UserName,
             Guid = appUser.Guid,
-            Token = _tokenService.CreateToken(appUser)
+            Token = _tokenService.CreateToken(appUser),
+            Gender = appUser.Gender,
+            DisplayName = appUser.DisplayName
         };
         return loginResponse;
+    }
+
+    /// <summary>
+    /// used by the LogUserAcitivty Action Filter
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <returns></returns>
+    public async Task LogUserActivityAsync(string userName)
+    {
+        if (string.IsNullOrWhiteSpace(userName)) return;
+
+        //app user 
+        var user = await _userRepository.GetAppUserAsync(userName);
+        if (user == null) return;
+
+        //update the last active date 
+        user.LastActive = DateTime.UtcNow;
+
+        //update 
+        await _userRepository.SaveAllAsync();
     }
 }

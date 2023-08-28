@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using OAuth2.WebApi.Core.Data.BusinessLogic;
 using OAuth2.WebApi.Core.Dto;
+using OAuth2.WebApi.Core.Dto.Pagination;
 using OAuth2.WebApi.Core.Entities;
+using OAuth2.WebApi.Core.Extensions;
 
 namespace OAuth2.WebApi.Controllers;
 
+[Authorize]
 public class UsersController : BaseApiController
 {
     private readonly IUserBusinessLogic _userBL;
@@ -16,17 +19,39 @@ public class UsersController : BaseApiController
     }
 
     /// <summary>
-    /// /api/users
+    /// 
     /// </summary>
+    /// <param name="userParams"></param>
     /// <returns></returns>
-    [Authorize]
     [HttpGet]
     //public ActionResult<IEnumerable<AppUser>> GetUsers()
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
+    //public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
+    public async Task<ActionResult<PagedList<UserDto>>> GetUsers([FromQuery] UserParams userParams)
     {
-        var users = await _userBL.GetUsersAsync();
+        //get the logged in users claims
+        //User has the logged in users info
+        var userName = User.GetUserName();
+
+        //get the current user from the db
+        var currentUser = await _userBL.GetUserAsync(userName);
+        if (currentUser == null)
+            return BadRequest("User issue");
+
+        //filter the current user
+        userParams.CurrentUserGuid = currentUser.Guid;
+
+        //if gender is not supplied then pick the opposite gender of the logged in user 
+        if (string.IsNullOrWhiteSpace(userParams.Gender))
+            userParams.Gender = currentUser.Gender.ToLowerInvariant() == "male" ? "female" : "male";
+
+        //get the users
+        var users = await _userBL.GetUsersAsync(userParams);
         if (users == null || !users.Any())
             return NotFound("No users found!");
+
+        //users has the pagination information so will need to write the pagination header using the extension we created
+        Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+
         return Ok(users);
     }
 
@@ -35,7 +60,6 @@ public class UsersController : BaseApiController
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [Authorize]
     [HttpGet("{id}", Name = "GetUserById")]
     //public ActionResult<AppUser> GetUser(int id)
     public async Task<ActionResult<UserDto>> GetUser(int id)
@@ -51,7 +75,6 @@ public class UsersController : BaseApiController
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    [Authorize]
     [HttpGet("name/{name}", Name = "GetUserByName")]
     public async Task<ActionResult<UserDto>> GetUser(string name)
     {
@@ -66,7 +89,6 @@ public class UsersController : BaseApiController
     /// </summary>
     /// <param name="guid"></param>
     /// <returns></returns>
-    [Authorize]
     [HttpGet("guid/{guid}", Name = "GetUserByGuid")]
     public async Task<ActionResult<UserDto>> GetUser(Guid guid)
     {

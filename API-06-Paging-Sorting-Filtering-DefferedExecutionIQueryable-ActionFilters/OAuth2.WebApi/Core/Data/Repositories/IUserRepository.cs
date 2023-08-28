@@ -1,4 +1,5 @@
 ﻿using OAuth2.WebApi.Core.Dto;
+using OAuth2.WebApi.Core.Dto.Pagination;
 using OAuth2.WebApi.Core.Entities;
 
 namespace OAuth2.WebApi.Core.Data.Repositories;
@@ -15,7 +16,8 @@ public interface IUserRepository
 
     Task<AppUser> GetAppUserAsync(string userName, bool includePhotos = false);
 
-    Task<IEnumerable<UserDto>> GetUsersAsync();
+    //Task<IEnumerable<UserDto>> GetUsersAsync();
+    Task<PagedList<UserDto>> GetUsersAsync(UserParams userParams);
 
     Task<UserDto> GetUserAsync(int id);
 
