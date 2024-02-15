@@ -41,8 +41,9 @@ public class Seed
         foreach (var user in users)
         {
             user.UserName = user.UserName.ToLowerInvariant();
-            user.PasswordHash = hashKey.Hash;
-            user.PasswordSalt = hashKey.Salt;
+            //removed due to Identity
+            //user.PasswordHash = hashKey.Hash;
+            //user.PasswordSalt = hashKey.Salt;
 
             //we are only adding tracking to the user, save changes will happen outside of the loop
             context.Users.Add(user);

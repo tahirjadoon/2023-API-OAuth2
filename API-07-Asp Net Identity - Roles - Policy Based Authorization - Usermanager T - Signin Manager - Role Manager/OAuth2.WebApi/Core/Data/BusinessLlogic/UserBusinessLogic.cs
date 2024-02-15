@@ -89,6 +89,8 @@ public class UserBusinessLogic : IUserBusinessLogic
         if (isUser)
             throw new ValidationException("Username already taken");
 
+        /*
+        //Changes due to identity implementation
         //hash the password using the CryptoExtension. It will give back hash and the Salt
         var passwordHashKey = registerUser.Password.ComputeHashHmacSha512();
         if (passwordHashKey == null)
@@ -100,6 +102,11 @@ public class UserBusinessLogic : IUserBusinessLogic
             UserName = registerUser.UserName.ToLower(), //store as lower case always
             PasswordHash = passwordHashKey.Hash,
             PasswordSalt = passwordHashKey.Salt
+        };
+        */
+        var appUser = new AppUser()
+        {
+            UserName = registerUser.UserName.ToLower(), //store as lower case always
         };
 
         //Register user
@@ -123,9 +130,11 @@ public class UserBusinessLogic : IUserBusinessLogic
             throw new ValidationException("Login info missing");
 
         var appUser = await _userRepository.GetAppUserAsync(loginInfo.UserName, includePhotos: true);
-        if (appUser == null || appUser.PasswordSalt == null || appUser.PasswordHash == null)
+        if (appUser == null) // Changes due to identity implementation || appUser.PasswordSalt == null || appUser.PasswordHash == null)
             throw new UnauthorizedAccessException("Either username or password is wrong");
 
+        /*
+        Changes due to identity implementation
         //password is hashed in db. Hash login password and check against the DB one
         var passwordHashKey = loginInfo.Password.ComputeHashHmacSha512(appUser.PasswordSalt);
         if (passwordHashKey == null)
@@ -134,6 +143,7 @@ public class UserBusinessLogic : IUserBusinessLogic
         //both are byte[]
         if (!passwordHashKey.Hash.AreEqual(appUser.PasswordHash))
             throw new UnauthorizedAccessException("Either username or password is wrong");
+        */
 
         var loginResponse = BuildLoginResponse(appUser);
 
